@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>dreamGo</title>
+    <meta name="description" content="360&deg; Image Gallery - A-Frame" />
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@5/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-layout-component@5.3.0/dist/aframe-layout-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-template-component@3.2.1/dist/aframe-template-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-controller-cursor-component@0.2.2/dist/aframe-controller-cursor-component.min.js"></script>
+    <script src="https://rawgit.com/dmarcos/aframe-motion-capture/master/dist/aframe-motion-capture.min.js"></script>
+    <script src="https://unpkg.com/aframe-proxy-event-component@2.1.0/dist/aframe-proxy-event-component.min.js"></script>
+    <script src="components/intersection-spawn.js"></script>
+    <script src="components/snap.js"></script>
+    <!-- Image link template to be reused. -->
+    <script id="link" type="text/html">
+      <a-entity class="link"
+        geometry="primitive: plane; height: 1; width: 1"
+        material="shader: flat; src: ${thumb}"
+        event-set__mouseenter="scale: 1.2 1.2 1"
+        event-set__mouseleave="scale: 1 1 1"
+        event-set__click="_target: #image-360; _delay: 300; material.src: ${src}"
+        proxy-event="event: click; to: #image-360; as: fade"
+        sound="on: click; src: #click-sound"></a-entity>
+    </script>
+    <script id="knot" type="text/html">
+      <a-entity class="knot"
+        geometry="primitive: circle; raduis: 1"
+        material="shader: flat; src: ${thumb}"
+        event-set__mouseenter="scale: 1.2 1.2 1"
+        event-set__mouseleave="scale: 1 1 1"
+        event-set__click="_target: #image-360; _delay: 300; material.src: ${src}"
+        proxy-event="event: click; to: #image-360; as: fade"
+        sound="on: click; src: #click-sound"></a-entity>
+    </script>
+  </head>
+  <body>
+    <a-scene>
+      <a-assets>
+        <img
+          id="default_Gog"
+          crossorigin="anonymous"
+          src="https://cdn.glitch.com/3aa53998-09db-450a-b7b4-14621225bd46%2Fgarden_of_the_gods_02_stitch_v002f_3_5k_Bg.jpg?v=1612033456298"
+        />
+        <img
+          id="city-thumb"
+          crossorigin="anonymous"
+          src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-city.jpg"
+        />
+        <img
+          id="cubes-thumb"
+          crossorigin="anonymous"
+          src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-cubes.jpg"
+        />
+        <img
+          id="sechelt-thumb"
+          crossorigin="anonymous"
+          src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-sechelt.jpg"
+        />
+        <audio
+          id="click-sound"
+          crossorigin="anonymous"
+          src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"
+        ></audio>
+        <img
+          id="shrine"
+          crossorigin="anonymous"
+          src="https://cdn.glitch.com/3aa53998-09db-450a-b7b4-14621225bd46%2F03-Ueno-Shrine_8k.jpg?v=1612033391418"
+        />
+        <img
+          id="roof"
+          crossorigin="anonymous"
+          src="https://cdn.glitch.com/3aa53998-09db-450a-b7b4-14621225bd46%2Froof_garden.jpg?v=1612033417395"
+        />
+        <img
+          id="groundTexture3"
+          src="https://cdn.glitch.com/e5230c98-fb0a-4a44-8cb6-2de8af9e103e%2F81.png?v=1611262841634"
+        />
+        <a-mixin
+          id="voxel"
+          geometry="primitive: sphere; radius: 0.102; "
+          rotation="0 0 0"
+          scale="1.4 0.45 1.4"
+          material="emissive: #fff;"
+          snap="offset: -0.0 0.237 -0.0; snap: 0.3333 0.3333 .3333;"
+        ></a-mixin>
+      </a-assets>
+
+      <!-- 360-degree image. -->
+      <a-sky
+        id="image-360"
+        radius="250"
+        src="#default_Gog"
+        animation__fade="property: components.material.material.color; type: color; from: #FFF; to: #000; dur: 300; startEvents: fade"
+        animation__fadeback="property: components.material.material.color; type: color; from: #000; to: #FFF; dur: 300; startEvents: animationcomplete__fade"
+      ></a-sky>
+
+      <!-- Image links. -->
+      <a-entity id="links" layout="type: line; margin: 1.5" position="0 -1 -4">
+        <a-entity
+          template="src: #link"
+          data-src="#shrine"
+          data-thumb="#cubes-thumb"
+        ></a-entity>
+        <a-entity
+          template="src: #link"
+          data-src="#default_Gog"
+          data-thumb="#city-thumb"
+        ></a-entity>
+        <a-entity
+          template="src: #link"
+          data-src="#roof"
+          data-thumb="#sechelt-thumb"
+        ></a-entity>
+      </a-entity>
+      <a-entity
+        geometry="primitive: box"
+        material="metalness: 1; roughness: 0.2; color: red; opacity: 0.9; shader: standard; emissive: red; emissiveIntensity: 100; fog: true;"
+        rotation="90 0 0"
+        position="0 0 0"
+        >
+      </a-entity>
+      <a-box
+        id="ground3"
+        src="#groundTexture3"
+        geometry="primitive: box"
+        rotation="0 0 0"
+        position="1 -3.531 -1"
+        scale="4.5 0.1 4.5"
+      ></a-box>
+      <!-- Camera + cursor. -->
+      <a-entity camera look-controls>
+        <a-cursor
+          id="cursor"
+          animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
+          animation__fusing="property: fusing; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+          event-set__mouseenter="_event: mouseenter; color: springgreen"
+          event-set__mouseleave="_event: mouseleave; color: black"
+          raycaster="objects: .link"
+          intersection-spawn="event: click; mixin: voxel; material.color: white"
+        ></a-cursor>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
